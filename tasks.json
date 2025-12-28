@@ -116,14 +116,14 @@
               "type": "Task",
               "id": "P2.M2.T1",
               "title": "Implement MCP Server Entry Point",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Create the main MCP server with stdio transport.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P2.M2.T1.S1",
                   "title": "Create MCP server initialization",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P2.M1.T1.S1"
@@ -134,7 +134,7 @@
                   "type": "Subtask",
                   "id": "P2.M2.T1.S2",
                   "title": "Implement tools list handler",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 2,
                   "dependencies": [
                     "P2.M2.T1.S1"
