@@ -10,6 +10,7 @@ import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
 import { executeMdsel } from './executor.js';
 
 // CRITICAL: Use console.error for debug messages, NOT console.log
@@ -33,6 +34,58 @@ const server = new Server(
 );
 
 console.error('Server initialized');
+
+// --------------------------------------------------------------
+// Zod Validation Schemas
+// --------------------------------------------------------------
+
+/**
+ * Zod schema for mdsel.index tool arguments
+ * Validates that files array is non-empty and contains non-empty strings
+ */
+const IndexArgsSchema = z.object({
+  files: z.array(z.string())
+    .min(1, 'files array must contain at least one file path')
+    .refine(
+      (files) => files.every(f => f.trim().length > 0),
+      'all file paths must be non-empty strings'
+    )
+});
+
+/**
+ * Zod schema for mdsel.select tool arguments
+ * Validates that selector is non-empty and files array is non-empty
+ */
+const SelectArgsSchema = z.object({
+  selector: z.string()
+    .min(1, 'selector must be a non-empty string')
+    .trim(),  // Trim whitespace from selector
+  files: z.array(z.string())
+    .min(1, 'files array must contain at least one file path')
+    .refine(
+      (files) => files.every(f => f.trim().length > 0),
+      'all file paths must be non-empty strings'
+    )
+});
+
+// --------------------------------------------------------------
+// Error Formatting Helper
+// --------------------------------------------------------------
+
+/**
+ * Format Zod validation errors into user-friendly error messages
+ */
+function formatZodError(error: z.ZodError): string {
+  const issues = error.issues.map((issue) => {
+    const path = issue.path.length > 0 ? issue.path.join('.') : 'arguments';
+    return `${path}: ${issue.message}`;
+  }).join('; ');
+
+  return `Invalid arguments: ${issues}\n\n` +
+    `Expected format:\n` +
+    `  mdsel.index: { "files": ["path/to/file1.md", "path/to/file2.md"] }\n` +
+    `  mdsel.select: { "selector": "heading:h1[0]", "files": ["path/to/file.md"] }`;
+}
 
 // --------------------------------------------------------------
 // ListTools Handler
@@ -94,13 +147,39 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     // Dispatch based on tool name
     if (name === 'mdsel.index') {
-      // Type guard for mdsel.index arguments
-      const { files } = args as { files: string[] };
+      // Validate arguments using Zod
+      const validation = IndexArgsSchema.safeParse(args);
+      if (!validation.success) {
+        console.error('mdsel.index validation failed:', validation.error.issues);
+        return {
+          isError: true,
+          content: [{
+            type: 'text',
+            text: formatZodError(validation.error)
+          }]
+        };
+      }
+
+      // Use validated data (type-safe)
+      const { files } = validation.data;
       cliArgs = ['index', '--json', ...files];
       console.error(`Executing: mdsel index --json ${files.join(' ')}`);
     } else if (name === 'mdsel.select') {
-      // Type guard for mdsel.select arguments
-      const { selector, files } = args as { selector: string; files: string[] };
+      // Validate arguments using Zod
+      const validation = SelectArgsSchema.safeParse(args);
+      if (!validation.success) {
+        console.error('mdsel.select validation failed:', validation.error.issues);
+        return {
+          isError: true,
+          content: [{
+            type: 'text',
+            text: formatZodError(validation.error)
+          }]
+        };
+      }
+
+      // Use validated data (type-safe, selector trimmed)
+      const { selector, files } = validation.data;
       cliArgs = ['select', '--json', selector, ...files];
       console.error(`Executing: mdsel select --json ${selector} ${files.join(' ')}`);
     } else {
@@ -133,13 +212,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     } else {
       // mdsel returned non-zero exit code
-      console.error(`Tool ${name} failed with exit code ${result.exitCode}`);
+      // Include command context for better debugging
+      const command = `mdsel ${cliArgs.join(' ')}`;
+      console.error(`Command failed with exit code ${result.exitCode}: ${command}`);
       return {
         isError: true,
         content: [
           {
             type: 'text',
-            text: result.stderr || `mdsel exited with code ${result.exitCode}`,
+            text: result.stderr || `Command "${command}" exited with code ${result.exitCode}`,
           },
         ],
       };

@@ -109,7 +109,7 @@
           "type": "Milestone",
           "id": "P2.M2",
           "title": "MCP Server Implementation",
-          "status": "Planned",
+          "status": "Complete",
           "description": "Create the main MCP server with stdio transport and tool handlers.",
           "tasks": [
             {
@@ -147,14 +147,14 @@
               "type": "Task",
               "id": "P2.M2.T2",
               "title": "Implement Tool Handlers",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Implement the execution handlers for mdsel.index and mdsel.select.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P2.M2.T2.S1",
                   "title": "Implement mdsel.index handler",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 2,
                   "dependencies": [
                     "P2.M2.T1.S2"
@@ -165,7 +165,7 @@
                   "type": "Subtask",
                   "id": "P2.M2.T2.S2",
                   "title": "Implement mdsel.select handler",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 2,
                   "dependencies": [
                     "P2.M2.T2.S1"
@@ -176,7 +176,7 @@
                   "type": "Subtask",
                   "id": "P2.M2.T2.S3",
                   "title": "Implement unknown tool error handling",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 0.5,
                   "dependencies": [
                     "P2.M2.T2.S2"
