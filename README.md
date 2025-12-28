@@ -98,7 +98,7 @@ Configure in your Windsurf MCP settings:
 
 ### mdsel.index
 
-Generate a selector inventory for Markdown documents. Returns all available selectors (headings, blocks) that can be used with mdsel.select. Each document is assigned a namespace derived from its filename (e.g., 'README.md' -> 'readme').
+Generate a selector inventory for Markdown documents. Returns all available selectors (headings, blocks) for use with mdsel.select. Each document gets a namespace from its filename (e.g., 'README.md' → 'readme'). Output includes heading tree and block counts (code, para, list, table, quote).
 
 **Parameters:**
 - `files` (array of strings, required): Absolute paths to Markdown files to index
@@ -128,18 +128,18 @@ Generate a selector inventory for Markdown documents. Returns all available sele
         "file_path": "/absolute/path/to/document.md",
         "headings": [
           {
-            "selector": "document::heading:h1[0]",
-            "type": "heading:h1",
+            "selector": "document::h1.0",
+            "type": "h1",
             "depth": 1,
             "text": "Document Title"
           }
         ],
         "blocks": {
-          "paragraphs": 5,
-          "code_blocks": 2,
-          "lists": 1,
-          "tables": 0,
-          "blockquotes": 0
+          "code": 2,
+          "para": 5,
+          "list": 1,
+          "table": 0,
+          "quote": 0
         }
       }
     ]
@@ -149,10 +149,10 @@ Generate a selector inventory for Markdown documents. Returns all available sele
 
 ### mdsel.select
 
-Select content from Markdown documents using selectors. Selectors follow the pattern: [namespace::]type[index][/path][?query]. Examples: 'heading:h1[0]' (first h1), 'readme::h2[1]' (second h2 in readme), 'h2[0]/code[0]' (first code block under first h2). Use '?full=true' to bypass truncation.
+Select content from Markdown documents using selectors. Selectors follow the pattern: [namespace::]type[.index][/path][?query]. Examples: 'h1.0' (first h1), 'readme::h2.1' (second h2 in readme), 'h2.0/code.0' (first code block under first h2), 'h2' (all h2 headings). Use '?full=true' to bypass truncation.
 
 **Parameters:**
-- `selector` (string, required): Selector expression. Format: [namespace::]type[index][/path][?query]
+- `selector` (string, required): Selector expression. Format: [namespace::]type[.index][/path][?query]
 - `files` (array of strings, required): Absolute paths to Markdown files to search
 
 **Example:**
@@ -161,7 +161,7 @@ Select content from Markdown documents using selectors. Selectors follow the pat
 {
   "name": "mdsel.select",
   "arguments": {
-    "selector": "heading:h1[0]",
+    "selector": "h1.0",
     "files": ["/absolute/path/to/document.md"]
   }
 }
@@ -177,7 +177,7 @@ Select content from Markdown documents using selectors. Selectors follow the pat
   "data": {
     "matches": [
       {
-        "selector": "heading:h1[0]",
+        "selector": "h1.0",
         "type": "heading",
         "content": "# Document Title\n\nContent under the heading...",
         "truncated": false
@@ -192,44 +192,65 @@ Select content from Markdown documents using selectors. Selectors follow the pat
 ### Syntax
 
 ```
-[namespace::]type[index][/path]?query
+[namespace::]type[.index][/path][?query]
 ```
 
 ### Components
 
 - **namespace** (optional): Document identifier derived from filename. Defaults to all documents if omitted.
-- **type** (required): Node type to select
-- **index** (optional): 0-based ordinal among siblings of the same type
+- **type** (required): Node type to select (shorthand preferred)
+- **index** (optional): 0-based ordinal. Use dot notation (`.0`) or bracket notation (`[0]`). Omit to select all matches.
 - **path** (optional): Additional path segments for nested selection
 - **query** (optional): Query parameters (e.g., `?full=true` to bypass truncation)
 
 ### Node Types
 
-| Category | Types | Shorthand |
-|----------|-------|-----------|
-| Root | `root` | - |
-| Headings | `heading:h1`, `heading:h2`, `heading:h3`, `heading:h4`, `heading:h5`, `heading:h6` | `h1`, `h2`, `h3`, `h4`, `h5`, `h6` |
-| Sections | `section` | - |
-| Blocks | `block:paragraph`, `block:list`, `block:code`, `block:table`, `block:blockquote` | `para`, `list`, `code`, `table`, `quote` |
+| Shorthand | Full Form | Description |
+|-----------|-----------|-------------|
+| `h1`-`h6` | `heading:h1`-`heading:h6` | Headings by level |
+| `code` | `block:code` | Code blocks |
+| `para`, `paragraph` | `block:paragraph` | Paragraphs |
+| `list` | `block:list` | Lists |
+| `table` | `block:table` | Tables |
+| `quote`, `blockquote` | `block:blockquote` | Block quotes |
+| `section` | `section` | Sections |
+| `root` | `root` | Document root |
+
+### Index Notation
+
+Both notations are interchangeable:
+
+| Notation | Example | Description |
+|----------|---------|-------------|
+| Dot | `h2.0` | First h2 (preferred) |
+| Bracket | `h2[0]` | First h2 (also supported) |
+| Range | `h2.1-3` or `h2[1-3]` | Selects h2.1, h2.2, h2.3 |
+| Comma list | `h2.0,2,4` or `h2[0,2,4]` | Selects h2.0, h2.2, h2.4 |
+| No index | `h2` | Selects **all** h2 headings |
 
 ### Selector Examples
 
 **Basic selectors:**
-- `heading:h1[0]` - First h1 heading in any document
-- `h2[1]` - Second h2 heading (shorthand form)
-- `code[0]` - First code block
+- `h1.0` - First h1 heading in any document
+- `h2.1` - Second h2 heading
+- `code.0` - First code block
+- `h2` - All h2 headings (no index = all)
 
 **Namespaced selectors:**
-- `readme::heading:h1[0]` - First h1 in the readme namespace
-- `document::h2[0]` - First h2 in the document namespace
+- `readme::h1.0` - First h1 in the readme namespace
+- `document::h2.0` - First h2 in the document namespace
 
 **Path selectors:**
-- `h2[0]/code[0]` - First code block under the first h2
-- `h1[0]/h2[1]/para[0]` - First paragraph under second h2 under first h1
+- `h2.0/code.0` - First code block under the first h2
+- `h1.0/h2.1/para.0` - First paragraph under second h2 under first h1
+
+**Range and list selectors:**
+- `h2.0-2` - First three h2 headings
+- `code.0,2,4` - First, third, and fifth code blocks
 
 **Query selectors:**
-- `section[0]?full=true` - Full content of first section (no truncation)
-- `readme::h2[0]/code[0]?full=true` - Full code block content
+- `section.0?full=true` - Full content of first section (no truncation)
+- `readme::h2.0/code.0?full=true` - Full code block content
 
 ## Development
 

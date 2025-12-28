@@ -84,7 +84,7 @@ export function formatZodError(error: z.ZodError): string {
   return `Invalid arguments: ${issues}\n\n` +
     `Expected format:\n` +
     `  mdsel.index: { "files": ["path/to/file1.md", "path/to/file2.md"] }\n` +
-    `  mdsel.select: { "selector": "heading:h1[0]", "files": ["path/to/file.md"] }`;
+    `  mdsel.select: { "selector": "h1.0", "files": ["path/to/file.md"] }`;
 }
 
 // --------------------------------------------------------------
@@ -102,7 +102,7 @@ export async function handleListTools() {
     tools: [
       {
         name: 'mdsel.index',
-        description: 'Generate a selector inventory for Markdown documents. Returns all available selectors (headings, blocks) that can be used with mdsel.select. Each document is assigned a namespace derived from its filename (e.g., \'README.md\' → \'readme\').',
+        description: 'Generate a selector inventory for Markdown documents. Returns all available selectors (headings, blocks) for use with mdsel.select. Each document gets a namespace from its filename (e.g., \'README.md\' → \'readme\'). Output includes heading tree and block counts (code, para, list, table, quote).',
         inputSchema: {
           type: 'object',
           properties: {
@@ -117,13 +117,13 @@ export async function handleListTools() {
       },
       {
         name: 'mdsel.select',
-        description: 'Select content from Markdown documents using selectors. Selectors follow the pattern: [namespace::]type[index][/path][?query]. Examples: \'heading:h1[0]\' (first h1), \'readme::h2[1]\' (second h2 in readme), \'h2[0]/code[0]\' (first code block under first h2). Use \'?full=true\' to bypass truncation.',
+        description: 'Select content from Markdown documents using selectors. Selectors follow the pattern: [namespace::]type[.index][/path][?query]. Examples: \'h1.0\' (first h1), \'readme::h2.1\' (second h2 in readme), \'h2.0/code.0\' (first code block under first h2), \'h2\' (all h2 headings). Use \'?full=true\' to bypass truncation.',
         inputSchema: {
           type: 'object',
           properties: {
             selector: {
               type: 'string',
-              description: 'Selector expression. Format: [namespace::]type[index][/path][?query]. Types: heading:h1-h6 (or h1-h6), block:paragraph (or para), block:code (or code), block:list (or list), block:table (or table), block:blockquote (or quote), root, section.',
+              description: 'Selector expression. Format: [namespace::]type[.index][/path][?query]. Use shorthand types: h1-h6, code, para, list, table, quote. Index: .0 (first), .1-3 (range), .0,2,4 (list), or omit for all.',
             },
             files: {
               type: 'array',
