@@ -1,0 +1,331 @@
+{
+  "backlog": [
+    {
+      "type": "Phase",
+      "id": "P1",
+      "title": "Package Setup & Configuration",
+      "status": "Planned",
+      "description": "Initialize the mdsel-mcp package with all required dependencies and build configuration.",
+      "milestones": [
+        {
+          "type": "Milestone",
+          "id": "P1.M1",
+          "title": "Project Bootstrap",
+          "status": "Complete",
+          "description": "Initialize TypeScript project with MCP SDK dependencies and build tooling.",
+          "tasks": [
+            {
+              "type": "Task",
+              "id": "P1.M1.T1",
+              "title": "Initialize Package Structure",
+              "status": "Complete",
+              "description": "Create the package structure with all required dependencies and configuration files.",
+              "subtasks": [
+                {
+                  "type": "Subtask",
+                  "id": "P1.M1.T1.S1",
+                  "title": "Create directory structure",
+                  "status": "Complete",
+                  "story_points": 0.5,
+                  "dependencies": [],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per plan/architecture/system_context.md, single src/ directory with index.ts entry point.\n2. INPUT: None (greenfield).\n3. LOGIC: Create directories: src/, tests/, tests/fixtures/.\n4. OUTPUT: Directory structure ready for source files."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P1.M1.T1.S2",
+                  "title": "Create package.json with MCP SDK dependencies",
+                  "status": "Complete",
+                  "story_points": 1,
+                  "dependencies": [
+                    "P1.M1.T1.S1"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per plan/architecture/external_deps.md, use @modelcontextprotocol/sdk and zod.\n2. INPUT: Directory structure from P1.M1.T1.S1.\n3. LOGIC: Create package.json with: name 'mdsel-mcp', version '1.0.0', type 'module', bin './dist/index.js', dependencies (@modelcontextprotocol/sdk ^1.0.0, zod ^3.25.0), peerDependencies (mdsel ^1.0.0), devDependencies (typescript ^5.7.0, tsup ^8.3.0, @types/node ^22.0.0, vitest ^2.1.0). engines: node >=18.0.0.\n4. OUTPUT: /package.json ready for npm install."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P1.M1.T1.S3",
+                  "title": "Create TypeScript configuration",
+                  "status": "Complete",
+                  "story_points": 0.5,
+                  "dependencies": [
+                    "P1.M1.T1.S2"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per plan/architecture/external_deps.md, use ES2022 target with bundler resolution.\n2. INPUT: package.json from P1.M1.T1.S2.\n3. LOGIC: Create tsconfig.json with: target ES2022, module ES2022, moduleResolution bundler, lib [ES2022], outDir ./dist, rootDir ./src, strict true, esModuleInterop true, skipLibCheck true, declaration true.\n4. OUTPUT: /tsconfig.json for TypeScript compilation."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P1.M1.T1.S4",
+                  "title": "Create tsup build configuration",
+                  "status": "Complete",
+                  "story_points": 1,
+                  "dependencies": [
+                    "P1.M1.T1.S3"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per plan/architecture/external_deps.md, tsup must add shebang banner for npx execution.\n2. INPUT: tsconfig.json from P1.M1.T1.S3.\n3. LOGIC: Create tsup.config.ts with: entry ['src/index.ts'], format ['esm'], target 'node18', dts true, clean true, banner: { js: '#!/usr/bin/env node' }. Add build/dev scripts to package.json.\n4. OUTPUT: /tsup.config.ts, updated package.json scripts."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Phase",
+      "id": "P2",
+      "title": "MCP Server Core",
+      "status": "Planned",
+      "description": "Implement the MCP server with tool definitions and CLI execution.",
+      "milestones": [
+        {
+          "type": "Milestone",
+          "id": "P2.M1",
+          "title": "CLI Executor",
+          "status": "Planned",
+          "description": "Create utility to spawn mdsel CLI commands and capture output.",
+          "tasks": [
+            {
+              "type": "Task",
+              "id": "P2.M1.T1",
+              "title": "Implement CLI Executor",
+              "status": "Planned",
+              "description": "Create the executeMdsel function to spawn CLI processes.",
+              "subtasks": [
+                {
+                  "type": "Subtask",
+                  "id": "P2.M1.T1.S1",
+                  "title": "Implement executeMdsel function",
+                  "status": "Planned",
+                  "story_points": 2,
+                  "dependencies": [
+                    "P1.M1.T1.S4"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per plan/architecture/external_deps.md, use child_process.spawn with npx mdsel.\n2. INPUT: Build configuration from P1.M1.T1.S4.\n3. LOGIC: Create src/executor.ts. Implement executeMdsel(args: string[]): Promise<{stdout: string, stderr: string, exitCode: number}>. Spawn 'npx mdsel' with provided args. Capture stdout/stderr via pipe. Handle process errors. Return result object.\n4. OUTPUT: /src/executor.ts exporting executeMdsel function."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Milestone",
+          "id": "P2.M2",
+          "title": "MCP Server Implementation",
+          "status": "Planned",
+          "description": "Create the main MCP server with stdio transport and tool handlers.",
+          "tasks": [
+            {
+              "type": "Task",
+              "id": "P2.M2.T1",
+              "title": "Implement MCP Server Entry Point",
+              "status": "Planned",
+              "description": "Create the main MCP server with stdio transport.",
+              "subtasks": [
+                {
+                  "type": "Subtask",
+                  "id": "P2.M2.T1.S1",
+                  "title": "Create MCP server initialization",
+                  "status": "Planned",
+                  "story_points": 1,
+                  "dependencies": [
+                    "P2.M1.T1.S1"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per plan/architecture/external_deps.md, use Server from @modelcontextprotocol/sdk with StdioServerTransport.\n2. INPUT: executeMdsel from P2.M1.T1.S1.\n3. LOGIC: Create src/index.ts. Import Server, StdioServerTransport from MCP SDK. Create server with name 'mdsel-mcp', version '1.0.0', capabilities: {tools: {}}. Create transport and connect. Handle process signals for graceful shutdown.\n4. OUTPUT: /src/index.ts with server initialization."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P2.M2.T1.S2",
+                  "title": "Implement tools list handler",
+                  "status": "Planned",
+                  "story_points": 2,
+                  "dependencies": [
+                    "P2.M2.T1.S1"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per plan/architecture/tool_schemas.md, expose exactly two tools: mdsel.index and mdsel.select.\n2. INPUT: Server from P2.M2.T1.S1.\n3. LOGIC: Register ListToolsRequestSchema handler. Return tools array with: 1) mdsel.index - description from tool_schemas.md, inputSchema {type: object, properties: {files: {type: array, items: {type: string}}}, required: ['files']}. 2) mdsel.select - description from tool_schemas.md, inputSchema {type: object, properties: {selector: {type: string}, files: {type: array, items: {type: string}}}, required: ['selector', 'files']}.\n4. OUTPUT: Updated /src/index.ts with ListTools handler."
+                }
+              ]
+            },
+            {
+              "type": "Task",
+              "id": "P2.M2.T2",
+              "title": "Implement Tool Handlers",
+              "status": "Planned",
+              "description": "Implement the execution handlers for mdsel.index and mdsel.select.",
+              "subtasks": [
+                {
+                  "type": "Subtask",
+                  "id": "P2.M2.T2.S1",
+                  "title": "Implement mdsel.index handler",
+                  "status": "Planned",
+                  "story_points": 2,
+                  "dependencies": [
+                    "P2.M2.T1.S2"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per PRD, output must be byte-for-byte identical to mdsel CLI output. Per plan/architecture/tool_schemas.md, CLI mapping is: mdsel index --json <files...>.\n2. INPUT: ListTools handler from P2.M2.T1.S2, executeMdsel from P2.M1.T1.S1.\n3. LOGIC: In CallToolRequestSchema handler, if name === 'mdsel.index': extract files from arguments. Call executeMdsel(['index', '--json', ...files]). If exitCode === 0, return {content: [{type: 'text', text: stdout}]}. If exitCode !== 0, return {isError: true, content: [{type: 'text', text: stdout || stderr}]}.\n4. OUTPUT: Updated /src/index.ts with mdsel.index handler."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P2.M2.T2.S2",
+                  "title": "Implement mdsel.select handler",
+                  "status": "Planned",
+                  "story_points": 2,
+                  "dependencies": [
+                    "P2.M2.T2.S1"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per PRD, output must be byte-for-byte identical to mdsel CLI output. Per plan/architecture/tool_schemas.md, CLI mapping is: mdsel select --json <selector> <files...>.\n2. INPUT: mdsel.index handler from P2.M2.T2.S1.\n3. LOGIC: In CallToolRequestSchema handler, if name === 'mdsel.select': extract selector and files from arguments. Call executeMdsel(['select', '--json', selector, ...files]). Return stdout as text content, or error with isError: true if exitCode !== 0.\n4. OUTPUT: Updated /src/index.ts with mdsel.select handler."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P2.M2.T2.S3",
+                  "title": "Implement unknown tool error handling",
+                  "status": "Planned",
+                  "story_points": 0.5,
+                  "dependencies": [
+                    "P2.M2.T2.S2"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: MCP protocol requires error response for unknown tool names.\n2. INPUT: Tool handlers from P2.M2.T2.S1-S2.\n3. LOGIC: In CallToolRequestSchema handler, add default case for unknown tool names. Return {isError: true, content: [{type: 'text', text: 'Unknown tool: <name>'}]}.\n4. OUTPUT: Updated /src/index.ts with complete error handling."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Phase",
+      "id": "P3",
+      "title": "Testing & Documentation",
+      "status": "Planned",
+      "description": "Create test suite and usage documentation.",
+      "milestones": [
+        {
+          "type": "Milestone",
+          "id": "P3.M1",
+          "title": "Test Suite",
+          "status": "Planned",
+          "description": "Create unit and integration tests for the MCP server.",
+          "tasks": [
+            {
+              "type": "Task",
+              "id": "P3.M1.T1",
+              "title": "Implement Test Suite",
+              "status": "Planned",
+              "description": "Create unit and integration tests for the MCP server.",
+              "subtasks": [
+                {
+                  "type": "Subtask",
+                  "id": "P3.M1.T1.S1",
+                  "title": "Create test fixtures",
+                  "status": "Planned",
+                  "story_points": 0.5,
+                  "dependencies": [
+                    "P2.M2.T2.S3"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Need markdown files for testing mdsel invocations.\n2. INPUT: Server implementation from P2.M2.\n3. LOGIC: Create tests/fixtures/test.md with: h1 heading, h2 subheading, paragraph, code block. This provides enough structure to test index and select operations.\n4. OUTPUT: /tests/fixtures/test.md."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P3.M1.T1.S2",
+                  "title": "Write executor unit tests",
+                  "status": "Planned",
+                  "story_points": 1,
+                  "dependencies": [
+                    "P3.M1.T1.S1"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Test CLI execution logic in isolation.\n2. INPUT: executeMdsel from P2.M1.T1.S1, fixtures from P3.M1.T1.S1.\n3. LOGIC: Create tests/executor.test.ts. Test: executeMdsel returns stdout/stderr/exitCode correctly, handles missing mdsel gracefully, captures JSON output from mdsel index/select.\n4. OUTPUT: /tests/executor.test.ts."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P3.M1.T1.S3",
+                  "title": "Write tool handler integration tests",
+                  "status": "Planned",
+                  "story_points": 2,
+                  "dependencies": [
+                    "P3.M1.T1.S2"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Test MCP tool execution end-to-end.\n2. INPUT: Server implementation from P2.M2, fixtures from P3.M1.T1.S1.\n3. LOGIC: Create tests/handlers.test.ts. Test: mdsel.index returns valid JSON for test fixture, mdsel.select with 'heading:h1[0]' returns matched content, mdsel.select with invalid selector returns error with suggestions, unknown tool returns appropriate error.\n4. OUTPUT: /tests/handlers.test.ts."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Milestone",
+          "id": "P3.M2",
+          "title": "Documentation",
+          "status": "Planned",
+          "description": "Write README with installation and usage instructions.",
+          "tasks": [
+            {
+              "type": "Task",
+              "id": "P3.M2.T1",
+              "title": "Create Documentation",
+              "status": "Planned",
+              "description": "Write README with installation and usage instructions.",
+              "subtasks": [
+                {
+                  "type": "Subtask",
+                  "id": "P3.M2.T1.S1",
+                  "title": "Write README.md",
+                  "status": "Planned",
+                  "story_points": 2,
+                  "dependencies": [
+                    "P3.M1.T1.S3"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Per PRD section 10, documentation must include: installation via npx, MCP server startup, tool list and purpose, example index/select calls, selector grammar explanation. No philosophy, no marketing.\n2. INPUT: Tool schemas from plan/architecture/tool_schemas.md.\n3. LOGIC: Create README.md with: 1) Installation (npx mdsel-mcp), 2) MCP client configuration example, 3) Tools table (mdsel.index, mdsel.select), 4) Example index request/response, 5) Example select request/response, 6) Brief selector grammar reference.\n4. OUTPUT: /README.md."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Phase",
+      "id": "P4",
+      "title": "Build & Distribution",
+      "status": "Planned",
+      "description": "Finalize build and prepare for npm publication.",
+      "milestones": [
+        {
+          "type": "Milestone",
+          "id": "P4.M1",
+          "title": "Package Finalization",
+          "status": "Planned",
+          "description": "Finalize package for npm publication.",
+          "tasks": [
+            {
+              "type": "Task",
+              "id": "P4.M1.T1",
+              "title": "Finalize Package for Publication",
+              "status": "Planned",
+              "description": "Ensure package is ready for npm publish.",
+              "subtasks": [
+                {
+                  "type": "Subtask",
+                  "id": "P4.M1.T1.S1",
+                  "title": "Configure npm package metadata",
+                  "status": "Planned",
+                  "story_points": 1,
+                  "dependencies": [
+                    "P3.M2.T1.S1"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Package must be runnable via 'npx mdsel-mcp'.\n2. INPUT: package.json from P1.M1.T1.S2.\n3. LOGIC: Update package.json: add keywords [mcp, mdsel, markdown, selector], repository field, license MIT, files ['dist', 'README.md'], prepublishOnly script 'npm run build && npm test'.\n4. OUTPUT: Updated /package.json ready for npm publish."
+                },
+                {
+                  "type": "Subtask",
+                  "id": "P4.M1.T1.S2",
+                  "title": "Verify npx execution",
+                  "status": "Planned",
+                  "story_points": 1,
+                  "dependencies": [
+                    "P4.M1.T1.S1"
+                  ],
+                  "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: PRD requires server runnable via 'npx mdsel-mcp'.\n2. INPUT: Package configuration from P4.M1.T1.S1.\n3. LOGIC: Build package with npm run build. Verify dist/index.js has shebang. Test local execution: node dist/index.js. Verify MCP protocol messages are exchanged correctly on stdio.\n4. OUTPUT: Verified working npx execution."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
