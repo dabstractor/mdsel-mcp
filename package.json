@@ -4,6 +4,13 @@
   "description": "MCP server for mdsel CLI - declarative Markdown selection",
   "type": "module",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "bin": {
     "mdsel-mcp": "./dist/index.js"
   },
@@ -13,7 +20,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build && npm run test:run",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest --coverage",
@@ -21,10 +28,27 @@
   },
   "keywords": [
     "mcp",
+    "modelcontextprotocol",
     "model-context-protocol",
     "markdown",
-    "mdsel"
+    "mdsel",
+    "declarative",
+    "selection",
+    "cli"
   ],
+  "author": {
+    "name": "Dustin",
+    "email": "dustin@windyroad.ca"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dustin/mdsel-mcp-glm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dustin/mdsel-mcp-glm/issues"
+  },
+  "homepage": "https://github.com/dustin/mdsel-mcp-glm#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "zod": "^3.25.0"
@@ -46,6 +70,10 @@
   },
   "files": [
     "dist",
-    "README.md"
-  ]
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }

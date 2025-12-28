@@ -282,28 +282,28 @@
       "type": "Phase",
       "id": "P4",
       "title": "Build & Distribution",
-      "status": "Planned",
+      "status": "Complete",
       "description": "Finalize build and prepare for npm publication.",
       "milestones": [
         {
           "type": "Milestone",
           "id": "P4.M1",
           "title": "Package Finalization",
-          "status": "Planned",
+          "status": "Complete",
           "description": "Finalize package for npm publication.",
           "tasks": [
             {
               "type": "Task",
               "id": "P4.M1.T1",
               "title": "Finalize Package for Publication",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Ensure package is ready for npm publish.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P4.M1.T1.S1",
                   "title": "Configure npm package metadata",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P3.M2.T1.S1"
@@ -314,7 +314,7 @@
                   "type": "Subtask",
                   "id": "P4.M1.T1.S2",
                   "title": "Verify npx execution",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P4.M1.T1.S1"
