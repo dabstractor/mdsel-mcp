@@ -5,11 +5,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { spawn } from 'child_process';
-import { executeMdsel, MdselSpawnError, type ExecutionResult } from './executor.js';
+import { executeMdsel, MdselSpawnError } from './executor.js';
 import {
   createMockChildProcess,
   createMockSuccess,
-  createMockFailure,
   createMockNullExitCode,
   createMockStreaming,
 } from './test/mocks/child_process.js';

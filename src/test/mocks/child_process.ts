@@ -4,7 +4,6 @@
 // ============================================================================
 
 import { EventEmitter } from 'events';
-import type { ChildProcess } from 'child_process';
 
 // ----------------------------------------------------------------------------
 // Mock ChildProcess Interface
@@ -134,13 +133,14 @@ export function createMockStreaming(
   mockProc.stderr = new EventEmitter();
   mockProc.kill = vi.fn();
 
-  // Emit each chunk with a slight delay
-  chunks.forEach((chunk, index) => {
+  // Emit each chunk immediately
+  chunks.forEach((chunk) => {
     setImmediate(() => {
       mockProc.stdout.emit('data', Buffer.from(chunk));
-    }, index * 10);
+    });
   });
 
+  // Emit close after all chunks
   setImmediate(() => {
     mockProc.emit('close', 0, null);
   });
