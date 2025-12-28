@@ -200,21 +200,21 @@
           "type": "Milestone",
           "id": "P3.M1",
           "title": "Test Suite",
-          "status": "Planned",
+          "status": "Complete",
           "description": "Create unit and integration tests for the MCP server.",
           "tasks": [
             {
               "type": "Task",
               "id": "P3.M1.T1",
               "title": "Implement Test Suite",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Create unit and integration tests for the MCP server.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P3.M1.T1.S1",
                   "title": "Create test fixtures",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 0.5,
                   "dependencies": [
                     "P2.M2.T2.S3"
@@ -225,7 +225,7 @@
                   "type": "Subtask",
                   "id": "P3.M1.T1.S2",
                   "title": "Write executor unit tests",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P3.M1.T1.S1"
@@ -236,7 +236,7 @@
                   "type": "Subtask",
                   "id": "P3.M1.T1.S3",
                   "title": "Write tool handler integration tests",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 2,
                   "dependencies": [
                     "P3.M1.T1.S2"

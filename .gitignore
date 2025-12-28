@@ -9,6 +9,12 @@ node_modules/
 # Build output
 dist/
 
+# Test coverage
+coverage/
+
+# Vitest
+.vitest/
+
 # Logs
 *.log
 npm-debug.log*

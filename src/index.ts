@@ -43,7 +43,7 @@ console.error('Server initialized');
  * Zod schema for mdsel.index tool arguments
  * Validates that files array is non-empty and contains non-empty strings
  */
-const IndexArgsSchema = z.object({
+export const IndexArgsSchema = z.object({
   files: z.array(z.string())
     .min(1, 'files array must contain at least one file path')
     .refine(
@@ -56,10 +56,10 @@ const IndexArgsSchema = z.object({
  * Zod schema for mdsel.select tool arguments
  * Validates that selector is non-empty and files array is non-empty
  */
-const SelectArgsSchema = z.object({
+export const SelectArgsSchema = z.object({
   selector: z.string()
-    .min(1, 'selector must be a non-empty string')
-    .trim(),  // Trim whitespace from selector
+    .trim()  // Trim whitespace from selector first
+    .min(1, 'selector must be a non-empty string'),
   files: z.array(z.string())
     .min(1, 'files array must contain at least one file path')
     .refine(
@@ -75,7 +75,7 @@ const SelectArgsSchema = z.object({
 /**
  * Format Zod validation errors into user-friendly error messages
  */
-function formatZodError(error: z.ZodError): string {
+export function formatZodError(error: z.ZodError): string {
   const issues = error.issues.map((issue) => {
     const path = issue.path.length > 0 ? issue.path.join('.') : 'arguments';
     return `${path}: ${issue.message}`;
@@ -91,7 +91,11 @@ function formatZodError(error: z.ZodError): string {
 // ListTools Handler
 // --------------------------------------------------------------
 
-server.setRequestHandler(ListToolsRequestSchema, async () => {
+/**
+ * Handler for ListTools MCP requests
+ * Returns the list of available tools (mdsel.index and mdsel.select)
+ */
+export async function handleListTools() {
   console.error('ListTools requested');
 
   return {
@@ -132,13 +136,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
     ],
   };
-});
+}
+
+server.setRequestHandler(ListToolsRequestSchema, handleListTools);
 
 // --------------------------------------------------------------
 // CallTool Handler
 // --------------------------------------------------------------
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+/**
+ * Handler for CallTool MCP requests
+ * Executes mdsel index or select based on the tool name
+ */
+export async function handleCallTool(request: { params: { name: string; arguments?: unknown } }) {
   const { name, arguments: args } = request.params;
   console.error(`CallTool requested: ${name}`);
 
@@ -239,7 +249,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       ],
     };
   }
-});
+}
+
+server.setRequestHandler(CallToolRequestSchema, handleCallTool);
 
 // --------------------------------------------------------------
 // Transport Setup
