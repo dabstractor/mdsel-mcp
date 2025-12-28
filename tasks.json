@@ -80,21 +80,21 @@
           "type": "Milestone",
           "id": "P2.M1",
           "title": "CLI Executor",
-          "status": "Planned",
+          "status": "Complete",
           "description": "Create utility to spawn mdsel CLI commands and capture output.",
           "tasks": [
             {
               "type": "Task",
               "id": "P2.M1.T1",
               "title": "Implement CLI Executor",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Create the executeMdsel function to spawn CLI processes.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P2.M1.T1.S1",
                   "title": "Implement executeMdsel function",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 2,
                   "dependencies": [
                     "P1.M1.T1.S4"

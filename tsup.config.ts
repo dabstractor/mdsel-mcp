@@ -1,8 +1,8 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  // Single entry point for simple MCP server
-  entry: ['src/index.ts'],
+  // Entry points: main server and executor module
+  entry: ['src/index.ts', 'src/executor.ts'],
 
   // Output directory
   outDir: 'dist',
