@@ -4,7 +4,7 @@
       "type": "Phase",
       "id": "P1",
       "title": "MVP: Functional MCP Server",
-      "status": "Planned",
+      "status": "Complete",
       "description": "Deliver a fully functional MCP server that wraps mdsel CLI with exact two tools (mdsel.index and mdsel.select) and can be run via npx.",
       "milestones": [
         {
@@ -208,21 +208,21 @@
           "type": "Milestone",
           "id": "P1.M5",
           "title": "Integration Testing",
-          "status": "Planned",
+          "status": "Complete",
           "description": "Verify end-to-end functionality with actual mdsel CLI.",
           "tasks": [
             {
               "type": "Task",
               "id": "P1.M5.T1",
               "title": "End-to-End Validation",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Test MCP server with real mdsel invocations.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P1.M5.T1.S1",
                   "title": "Manual E2E test with MCP Inspector",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P1.M3.T1.S1"
@@ -233,7 +233,7 @@
                   "type": "Subtask",
                   "id": "P1.M5.T1.S2",
                   "title": "Verify output byte-fidelity",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P1.M5.T1.S1"
