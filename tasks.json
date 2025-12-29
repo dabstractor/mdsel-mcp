@@ -67,14 +67,14 @@
               "type": "Task",
               "id": "P1.M2.T1",
               "title": "MCP Server Bootstrap",
-              "status": "Planned",
-              "description": "Create the MCP server entry point with stdio transport.",
+              "status": "Complete",
+              "description": "Create the MCP server entry point with stdio transport. Research completed: See plan/P1M2T1/research/mcp_testing_research.md for testing best practices.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P1.M2.T1.S1",
                   "title": "Implement MCP server initialization",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P1.M1.T1.S3"
