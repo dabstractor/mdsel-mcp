@@ -80,6 +80,18 @@ const MdselIndexSchema = z.object({
     .describe("Markdown file paths to index")
 });
 
+// Zod schema for mdsel.select tool
+const MdselSelectSchema = z.object({
+  selector: z.string()
+    .describe("mdsel selector string following pattern: [namespace::]type[index][/path]"),
+  files: z.array(z.string())
+    .optional()
+    .describe("Optional Markdown file paths to search"),
+  full: z.boolean()
+    .optional()
+    .describe("Bypass truncation and return full content")
+});
+
 // Create MCP server instance
 const server = new Server(
   {
@@ -111,6 +123,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         },
         required: ["files"]
       }
+    },
+    {
+      name: "mdsel.select",
+      description: "Retrieve Markdown content via declarative selectors. Uses mdsel selector grammar to extract specific document sections, headings, code blocks, paragraphs, lists, and tables. Returns matched content as compact text.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          selector: {
+            type: "string",
+            description: "mdsel selector string (e.g., 'h1.0', 'h2.0/code.0', 'h1.0/h2.1')"
+          },
+          files: {
+            type: "array",
+            items: { type: "string" },
+            description: "Optional Markdown file paths to search"
+          },
+          full: {
+            type: "boolean",
+            description: "Bypass truncation and return full content"
+          }
+        },
+        required: ["selector"]
+      }
     }
   ]
 }));
@@ -128,6 +163,44 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       try {
         const result = await executeMdsel(["index", ...parsed.data.files]);
+        return {
+          content: [{ type: "text", text: result }]
+        };
+      } catch (spawnError) {
+        return {
+          content: [{
+            type: "text",
+            text: `Failed to execute mdsel: ${spawnError instanceof Error ? spawnError.message : String(spawnError)}`,
+            isError: true
+          }]
+        };
+      }
+    }
+
+    case "mdsel.select": {
+      const parsed = MdselSelectSchema.safeParse(args);
+      if (!parsed.success) {
+        throw new Error(`Invalid arguments for mdsel.select: ${parsed.error.message}`);
+      }
+
+      try {
+        // Build command arguments with conditional --full flag
+        const cmdArgs = ["select"];
+
+        // CRITICAL: --full flag must come before selector
+        if (parsed.data.full) {
+          cmdArgs.push("--full");
+        }
+
+        // Add required selector parameter
+        cmdArgs.push(parsed.data.selector);
+
+        // Add optional files parameter
+        if (parsed.data.files) {
+          cmdArgs.push(...parsed.data.files);
+        }
+
+        const result = await executeMdsel(cmdArgs);
         return {
           content: [{ type: "text", text: result }]
         };
