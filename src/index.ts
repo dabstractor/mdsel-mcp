@@ -83,13 +83,10 @@ const MdselIndexSchema = z.object({
 // Zod schema for mdsel.select tool
 const MdselSelectSchema = z.object({
   selector: z.string()
-    .describe("mdsel selector string following pattern: [namespace::]type[index][/path]"),
+    .describe("mdsel selector string (e.g., 'h1.0', 'h2.0/code.0', 'h1.0/h2.1')"),
   files: z.array(z.string())
     .optional()
-    .describe("Optional Markdown file paths to search"),
-  full: z.boolean()
-    .optional()
-    .describe("Bypass truncation and return full content")
+    .describe("Optional Markdown file paths to search")
 });
 
 // Create MCP server instance
@@ -138,10 +135,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             type: "array",
             items: { type: "string" },
             description: "Optional Markdown file paths to search"
-          },
-          full: {
-            type: "boolean",
-            description: "Bypass truncation and return full content"
           }
         },
         required: ["selector"]
@@ -184,13 +177,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       try {
-        // Build command arguments with conditional --full flag
+        // Build command arguments
         const cmdArgs = ["select"];
 
-        // CRITICAL: --full flag must come before selector
-        if (parsed.data.full) {
-          cmdArgs.push("--full");
-        }
+        // Note: mdsel CLI doesn't have a --full flag
+        // The 'full' parameter is documented but not implemented in the CLI
+        // Future: add --full support to mdsel CLI if needed
 
         // Add required selector parameter
         cmdArgs.push(parsed.data.selector);

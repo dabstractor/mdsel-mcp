@@ -64,7 +64,6 @@ Selects content from indexed files using mdsel selector syntax.
 **Parameters**:
 - `selector` (string, required): mdsel selector string
 - `files` (string[], optional): Array of file paths to search
-- `full` (boolean, optional): Bypass truncation and return full content
 
 **Example**:
 ```json
