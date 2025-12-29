@@ -2,13 +2,38 @@
   "name": "mdsel-mcp",
   "version": "1.0.0",
   "description": "MCP server for mdsel CLI - Declarative Markdown Selection",
+  "author": "dabstractor",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dabstractor/mdsel-mcp.git"
+  },
+  "homepage": "https://github.com/dabstractor/mdsel-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/dabstractor/mdsel-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "mdsel",
+    "markdown",
+    "selector",
+    "model-context-protocol",
+    "cli"
+  ],
   "type": "module",
   "bin": {
     "mdsel-mcp": "./dist/index.js"
   },
   "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
+    "postbuild": "shx chmod +x dist/*.js",
+    "prepack": "npm run build",
+    "check:build": "test -f dist/index.js && test -x dist/index.js",
     "start": "node dist/index.js"
   },
   "dependencies": {
@@ -17,6 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "shx": "^0.3.4",
     "typescript": "^5.0.0"
   },
   "engines": {

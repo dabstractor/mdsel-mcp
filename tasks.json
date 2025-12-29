@@ -149,21 +149,21 @@
           "type": "Milestone",
           "id": "P1.M3",
           "title": "Build and Distribution",
-          "status": "Researching",
+          "status": "Complete",
           "description": "Ensure the package compiles and is executable via npx.",
           "tasks": [
             {
               "type": "Task",
               "id": "P1.M3.T1",
               "title": "Build Pipeline",
-              "status": "Researching",
+              "status": "Complete",
               "description": "Configure build process and verify npx execution.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P1.M3.T1.S1",
                   "title": "Compile TypeScript and verify bin execution",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [
                     "P1.M2.T3.S1",
