@@ -11,21 +11,21 @@
           "type": "Milestone",
           "id": "P1.M1",
           "title": "Project Scaffolding",
-          "status": "Planned",
+          "status": "Complete",
           "description": "Initialize Node.js project with TypeScript configuration and all required dependencies.",
           "tasks": [
             {
               "type": "Task",
               "id": "P1.M1.T1",
               "title": "Initialize npm package",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Create package.json with correct metadata, dependencies, and bin entry for npx execution.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P1.M1.T1.S1",
                   "title": "Create package.json with MCP dependencies",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
                   "dependencies": [],
                   "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: See plan/architecture/implementation_patterns.md for package.json structure.\n2. INPUT: None (greenfield).\n3. LOGIC: Create package.json with:\n   - name: 'mdsel-mcp'\n   - version: '1.0.0'\n   - type: 'module' (ESM)\n   - bin: { 'mdsel-mcp': './dist/index.js' }\n   - dependencies: @modelcontextprotocol/sdk ^1.25.1, zod ^3.25.0\n   - devDependencies: typescript ^5.0.0, @types/node ^22.0.0\n   - scripts: build, start\n4. OUTPUT: /package.json file ready for npm install."
@@ -34,18 +34,22 @@
                   "type": "Subtask",
                   "id": "P1.M1.T1.S2",
                   "title": "Create TypeScript configuration",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 1,
-                  "dependencies": ["P1.M1.T1.S1"],
+                  "dependencies": [
+                    "P1.M1.T1.S1"
+                  ],
                   "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: See plan/architecture/implementation_patterns.md for tsconfig.json structure.\n2. INPUT: package.json from P1.M1.T1.S1 confirms ESM module type.\n3. LOGIC: Create tsconfig.json with:\n   - target: ES2022\n   - module: NodeNext\n   - moduleResolution: NodeNext\n   - strict: true\n   - outDir: ./dist\n   - rootDir: ./src\n4. OUTPUT: /tsconfig.json file enabling TypeScript compilation."
                 },
                 {
                   "type": "Subtask",
                   "id": "P1.M1.T1.S3",
                   "title": "Install dependencies and verify setup",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 0.5,
-                  "dependencies": ["P1.M1.T1.S2"],
+                  "dependencies": [
+                    "P1.M1.T1.S2"
+                  ],
                   "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Dependencies listed in plan/architecture/external_deps.md.\n2. INPUT: package.json and tsconfig.json from prior subtasks.\n3. LOGIC: Run npm install. Verify node_modules contains @modelcontextprotocol/sdk and zod. Create empty src/index.ts placeholder.\n4. OUTPUT: node_modules/ populated, src/index.ts exists (empty), project compiles with tsc."
                 }
               ]
@@ -72,7 +76,9 @@
                   "title": "Implement MCP server initialization",
                   "status": "Planned",
                   "story_points": 1,
-                  "dependencies": ["P1.M1.T1.S3"],
+                  "dependencies": [
+                    "P1.M1.T1.S3"
+                  ],
                   "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: See plan/architecture/implementation_patterns.md for server bootstrap pattern.\n2. INPUT: Empty src/index.ts from P1.M1.T1.S3.\n3. LOGIC: Implement in src/index.ts:\n   - Import Server from @modelcontextprotocol/sdk/server/index.js\n   - Import StdioServerTransport from @modelcontextprotocol/sdk/server/stdio.js\n   - Create server with name='mdsel-mcp', version='1.0.0'\n   - Add main() function that creates StdioServerTransport and calls server.connect()\n   - Add shebang #!/usr/bin/env node at top for bin execution\n4. OUTPUT: src/index.ts with MCP server that starts on stdio. Compiles successfully. No tools defined yet."
                 }
               ]
@@ -159,7 +165,10 @@
                   "title": "Compile TypeScript and verify bin execution",
                   "status": "Planned",
                   "story_points": 1,
-                  "dependencies": ["P1.M2.T3.S1", "P1.M2.T4.S1"],
+                  "dependencies": [
+                    "P1.M2.T3.S1",
+                    "P1.M2.T4.S1"
+                  ],
                   "context_scope": "CONTRACT DEFINITION:\n1. RESEARCH NOTE: Package bin entry 'mdsel-mcp': './dist/index.js' per plan/architecture/implementation_patterns.md.\n2. INPUT: Complete src/index.ts with both tools from P1.M2.T3.S1 and P1.M2.T4.S1.\n3. LOGIC:\n   - Run npm run build (tsc)\n   - Verify dist/index.js exists and has shebang\n   - Run chmod +x dist/index.js if needed\n   - Test: node dist/index.js (should wait for stdio input)\n   - Test: npm link && mdsel-mcp (verify bin works)\n4. OUTPUT: dist/index.js is executable. 'npx .' starts the MCP server."
                 }
               ]
