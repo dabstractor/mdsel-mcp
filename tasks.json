@@ -107,14 +107,14 @@
               "type": "Task",
               "id": "P1.M2.T3",
               "title": "Tool: mdsel.index",
-              "status": "Planned",
+              "status": "Complete",
               "description": "Implement the mdsel.index MCP tool.",
               "subtasks": [
                 {
                   "type": "Subtask",
                   "id": "P1.M2.T3.S1",
                   "title": "Define and implement mdsel.index tool",
-                  "status": "Planned",
+                  "status": "Complete",
                   "story_points": 2,
                   "dependencies": [
                     "P1.M2.T2.S1"

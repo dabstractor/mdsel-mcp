@@ -2,7 +2,12 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  ListToolsRequestSchema,
+  CallToolRequestSchema
+} from "@modelcontextprotocol/sdk/types.js";
 import { spawn } from "child_process";
+import { z } from "zod";
 
 // Disable ANSI color codes for stdio transport (corrupts JSON-RPC)
 if (!process.stdout.isTTY) {
@@ -56,7 +61,7 @@ async function executeMdsel(args: string[]): Promise<string> {
       cleanup();
       if (timedOut) return;
       // CRITICAL: Return stdout regardless of exit code
-      // mdsel outputs valid JSON even on errors
+      // mdsel outputs text even on errors
       resolve(stdout);
     });
 
@@ -67,6 +72,13 @@ async function executeMdsel(args: string[]): Promise<string> {
     });
   });
 }
+
+// Zod schema for mdsel.index tool
+const MdselIndexSchema = z.object({
+  files: z.array(z.string())
+    .min(1, "At least one file must be specified")
+    .describe("Markdown file paths to index")
+});
 
 // Create MCP server instance
 const server = new Server(
@@ -80,6 +92,60 @@ const server = new Server(
     }
   }
 );
+
+// Register ListTools handler - exposes available tools
+server.setRequestHandler(ListToolsRequestSchema, async () => ({
+  tools: [
+    {
+      name: "mdsel.index",
+      description: "Index Markdown documents to discover available selectors for content retrieval. Returns a compact text inventory of all addressable content chunks including headings, paragraphs, code blocks, lists, and tables.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          files: {
+            type: "array",
+            items: { type: "string" },
+            description: "Markdown file paths to index",
+            minItems: 1
+          }
+        },
+        required: ["files"]
+      }
+    }
+  ]
+}));
+
+// Register CallTool handler - executes tool calls
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  const { name, arguments: args } = request.params;
+
+  switch (name) {
+    case "mdsel.index": {
+      const parsed = MdselIndexSchema.safeParse(args);
+      if (!parsed.success) {
+        throw new Error(`Invalid arguments for mdsel.index: ${parsed.error.message}`);
+      }
+
+      try {
+        const result = await executeMdsel(["index", ...parsed.data.files]);
+        return {
+          content: [{ type: "text", text: result }]
+        };
+      } catch (spawnError) {
+        return {
+          content: [{
+            type: "text",
+            text: `Failed to execute mdsel: ${spawnError instanceof Error ? spawnError.message : String(spawnError)}`,
+            isError: true
+          }]
+        };
+      }
+    }
+
+    default:
+      throw new Error(`Unknown tool: ${name}`);
+  }
+});
 
 // Graceful shutdown handler
 process.on('SIGINT', async () => {
