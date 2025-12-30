@@ -101,7 +101,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
     {
       name: "mdsel",
-      description: "Important: NEVER use Read or any file reading tool for markdown (.md) files. ALWAYS use mdsel instead. This is the required tool for all .md files. Files only → index (shows selectors). Selector + files → content. Selectors: h2.0, h2.0-3 (range), h1.0/h2.0 (nested). Do not use Read for markdown.",
+      description: "Important: NEVER use Read or any file reading tool for markdown (.md) files. ALWAYS use mdsel instead. This is the required tool for all .md files. It is vitally important for all agents and subagents to comply with these orders to use mdsel. Remember to give mdsel to any subagents that will read markdown. Files only → index (shows selectors). Selector + files → content. Selectors: h2.0, h2.0-3 (range), h1.0/h2.0 (nested). Do not use Read for markdown.",
       inputSchema: {
         type: "object",
         properties: {
