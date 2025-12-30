@@ -10,7 +10,6 @@ npx -y mdsel-mcp
 
 ## Prerequisites
 
-- **mdsel CLI**: Must be installed locally on your system
 - **Node.js**: Version 18.0.0 or higher
 
 ## Configuration
