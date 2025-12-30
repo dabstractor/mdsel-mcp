@@ -77,20 +77,10 @@ async function executeMdsel(args: string[]): Promise<string> {
   });
 }
 
-// Zod schema for mdsel.index tool
-const MdselIndexSchema = z.object({
-  files: z.array(z.string())
-    .min(1, "At least one file must be specified")
-    .describe("Markdown file paths to index")
-});
-
-// Zod schema for mdsel.select tool
-const MdselSelectSchema = z.object({
-  selector: z.string()
-    .describe("mdsel selector string (e.g., 'h1.0', 'h2.0/code.0', 'h1.0/h2.1')"),
-  files: z.array(z.string())
-    .optional()
-    .describe("Optional Markdown file paths to search")
+// Zod schema for unified mdsel tool
+const MdselSchema = z.object({
+  selector: z.string().optional(),
+  files: z.array(z.string()).min(1)
 });
 
 // Create MCP server instance
@@ -110,38 +100,15 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
     {
-      name: "mdsel.index",
-      description: "CRITICAL: You MUST use this tool to index ANY Markdown file (.md) before reading it. NEVER use the Read tool or any other method to read Markdown files - ALWAYS use mdsel tools instead. This indexes Markdown documents to discover available selectors for content retrieval. Returns a compact text inventory of all addressable content chunks including headings, paragraphs, code blocks, lists, and tables.",
+      name: "mdsel",
+      description: "Important: NEVER use Read or any file reading tool for markdown (.md) files. ALWAYS use mdsel instead. Files only → index (shows selectors). Selector + files → content. Selectors: h2.0, h2.0-3 (range), h1.0/h2.0 (nested).",
       inputSchema: {
         type: "object",
         properties: {
-          files: {
-            type: "array",
-            items: { type: "string" },
-            description: "Markdown file paths to index",
-            minItems: 1
-          }
+          selector: { type: "string" },
+          files: { type: "array", items: { type: "string" } }
         },
         required: ["files"]
-      }
-    },
-    {
-      name: "mdsel.select",
-      description: "CRITICAL: You MUST use this tool to read ANY Markdown file (.md) content. NEVER use the Read tool or any other method to read Markdown files - ALWAYS use mdsel_select instead. Uses mdsel selector grammar to extract specific document sections, headings, code blocks, paragraphs, lists, and tables. Returns matched content as compact text.",
-      inputSchema: {
-        type: "object",
-        properties: {
-          selector: {
-            type: "string",
-            description: "mdsel selector string (e.g., 'h1.0', 'h2.0/code.0', 'h1.0/h2.1')"
-          },
-          files: {
-            type: "array",
-            items: { type: "string" },
-            description: "Optional Markdown file paths to search"
-          }
-        },
-        required: ["selector"]
       }
     }
   ]
@@ -151,68 +118,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
-  switch (name) {
-    case "mdsel.index": {
-      const parsed = MdselIndexSchema.safeParse(args);
-      if (!parsed.success) {
-        throw new Error(`Invalid arguments for mdsel.index: ${parsed.error.message}`);
-      }
+  if (name !== "mdsel") {
+    throw new Error(`Unknown tool: ${name}`);
+  }
 
-      try {
-        const result = await executeMdsel(["index", ...parsed.data.files]);
-        return {
-          content: [{ type: "text", text: result }]
-        };
-      } catch (spawnError) {
-        return {
-          content: [{
-            type: "text",
-            text: `Failed to execute mdsel: ${spawnError instanceof Error ? spawnError.message : String(spawnError)}`,
-            isError: true
-          }]
-        };
-      }
-    }
+  const parsed = MdselSchema.safeParse(args);
+  if (!parsed.success) {
+    throw new Error(`Invalid arguments: ${parsed.error.message}`);
+  }
 
-    case "mdsel.select": {
-      const parsed = MdselSelectSchema.safeParse(args);
-      if (!parsed.success) {
-        throw new Error(`Invalid arguments for mdsel.select: ${parsed.error.message}`);
-      }
+  try {
+    const selectors = parsed.data.selector
+      ? parsed.data.selector.split(',').map(s => s.trim())
+      : [];
+    const cmdArgs = [...selectors, ...parsed.data.files];
 
-      try {
-        // Build command arguments
-        const cmdArgs = ["select"];
-
-        // Note: mdsel CLI doesn't have a --full flag
-        // The 'full' parameter is documented but not implemented in the CLI
-        // Future: add --full support to mdsel CLI if needed
-
-        // Add required selector parameter
-        cmdArgs.push(parsed.data.selector);
-
-        // Add optional files parameter
-        if (parsed.data.files) {
-          cmdArgs.push(...parsed.data.files);
-        }
-
-        const result = await executeMdsel(cmdArgs);
-        return {
-          content: [{ type: "text", text: result }]
-        };
-      } catch (spawnError) {
-        return {
-          content: [{
-            type: "text",
-            text: `Failed to execute mdsel: ${spawnError instanceof Error ? spawnError.message : String(spawnError)}`,
-            isError: true
-          }]
-        };
-      }
-    }
-
-    default:
-      throw new Error(`Unknown tool: ${name}`);
+    const result = await executeMdsel(cmdArgs);
+    return { content: [{ type: "text", text: result }] };
+  } catch (err) {
+    return {
+      content: [{
+        type: "text",
+        text: `mdsel error: ${err instanceof Error ? err.message : String(err)}`,
+        isError: true
+      }]
+    };
   }
 });
 
