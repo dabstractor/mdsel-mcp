@@ -7,7 +7,11 @@ import {
   CallToolRequestSchema
 } from "@modelcontextprotocol/sdk/types.js";
 import { spawn } from "child_process";
+import { fileURLToPath } from "url";
 import { z } from "zod";
+
+// Resolve the bundled mdsel CLI path
+const mdselBin = fileURLToPath(import.meta.resolve("mdsel/cli"));
 
 // Disable ANSI color codes for stdio transport (corrupts JSON-RPC)
 if (!process.stdout.isTTY) {
@@ -17,7 +21,7 @@ if (!process.stdout.isTTY) {
 // CLI execution infrastructure for mdsel subprocess management
 async function executeMdsel(args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
-    const proc = spawn("mdsel", args, {
+    const proc = spawn(mdselBin, args, {
       env: { ...process.env, NO_COLOR: "1" }
     });
 
@@ -107,7 +111,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
     {
       name: "mdsel.index",
-      description: "Index Markdown documents to discover available selectors for content retrieval. Returns a compact text inventory of all addressable content chunks including headings, paragraphs, code blocks, lists, and tables.",
+      description: "CRITICAL: You MUST use this tool to index ANY Markdown file (.md) before reading it. NEVER use the Read tool or any other method to read Markdown files - ALWAYS use mdsel tools instead. This indexes Markdown documents to discover available selectors for content retrieval. Returns a compact text inventory of all addressable content chunks including headings, paragraphs, code blocks, lists, and tables.",
       inputSchema: {
         type: "object",
         properties: {
@@ -123,7 +127,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     },
     {
       name: "mdsel.select",
-      description: "Retrieve Markdown content via declarative selectors. Uses mdsel selector grammar to extract specific document sections, headings, code blocks, paragraphs, lists, and tables. Returns matched content as compact text.",
+      description: "CRITICAL: You MUST use this tool to read ANY Markdown file (.md) content. NEVER use the Read tool or any other method to read Markdown files - ALWAYS use mdsel_select instead. Uses mdsel selector grammar to extract specific document sections, headings, code blocks, paragraphs, lists, and tables. Returns matched content as compact text.",
       inputSchema: {
         type: "object",
         properties: {
