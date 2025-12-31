@@ -45,6 +45,7 @@ This MCP server provides one unified tool: **mdsel**
 
 * Files only → returns index (document structure with available selectors)
 * Selector + files → returns selected content
+* Search query + files → fuzzy search when input doesn't look like a selector
 
 ### Index Mode (files only)
 
@@ -74,13 +75,38 @@ code:2 para:5 list:3
 {
   "name": "mdsel",
   "arguments": {
-    "selector": "h2.0",
+    "selector": "h2.1",
     "files": ["README.md"]
   }
 }
 ```
 
 Returns the content under the selected heading.
+
+### Search Mode (fuzzy matching)
+
+When the selector doesn't look like selector syntax, mdsel performs fuzzy search:
+
+```json
+{
+  "name": "mdsel",
+  "arguments": {
+    "selector": "installation",
+    "files": ["README.md"]
+  }
+}
+```
+
+Returns matching selectors with relevance scores:
+
+```
+Search results for "installation":
+
+readme::h2.1 (100% match)
+  Installation
+```
+
+Use the returned selectors to fetch the actual content.
 
 ## Selector Syntax
 
@@ -94,13 +120,14 @@ Selectors are path-based, ordinal, and 0-indexed.
 
 | Type | Shorthand | Description |
 |------|-----------|-------------|
+| `*` | `*` | Entire document (wildcard) |
+| `root` | - | Document root |
 | `heading:h1` ... `heading:h6` | `h1` ... `h6` | Headings by level |
 | `block:paragraph` | `para` | Paragraphs |
 | `block:code` | `code` | Code blocks |
 | `block:list` | `list` | Lists |
 | `block:table` | `table` | Tables |
 | `block:blockquote` | `quote` | Blockquotes |
-| `root` | - | Document root |
 
 ### Index Notation
 
@@ -125,9 +152,19 @@ When indexing multiple files, each gets a namespace. Use `namespace::selector` t
 * `readme::h2.0` - First h2 in readme
 * `h2.0` - First h2 from all files
 
+### Query Parameters
+
+Limit output with query parameters:
+
+* `h2.0?head=10` - First 10 lines of content
+* `h2.0?tail=5` - Last 5 lines of content
+
 ### Examples
 
 ```bash
+# Wildcard - entire document
+*
+
 # Basic selection
 h1.0                # First h1 heading
 h2.1                # Second h2 heading
@@ -143,6 +180,9 @@ h1.0/h2.0           # First h2 under first h1
 
 # Multiple files
 readme::h2.0        # First h2 in readme namespace
+
+# Truncation
+h2.0?head=10        # First 10 lines
 ```
 
 ## Development
